@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Budget">
+<meta name="theme-color" content="#305396">
+<meta name="robots" content="noindex">
+<title>My Budget 2027</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+:root{--navy:#305396;--green:#00B050;--orange:#FE8E66;--blue:#3B94B4;--brown:#5F301F;--purple:#7030A0;--slate:#44546A;--bg:#f3f5fa;--card:#fff;--red:#C00000;--text:#1d2433;--muted:#6b7280}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:Calibri,Carlito,"Segoe UI",Arial,sans-serif;font-size:17px;background:var(--bg);color:var(--text);padding:0 0 92px}
+header{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;padding:16px 16px 12px;position:sticky;top:0;z-index:5;padding-top:calc(16px + env(safe-area-inset-top,0px))}
+header h1{margin:0;font-size:24px;font-weight:700}
+header .sub{opacity:.9;font-size:14px}
+main{padding:12px;max-width:760px;margin:0 auto}
+nav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;box-shadow:0 -2px 10px rgba(0,0,0,.08);padding-bottom:env(safe-area-inset-bottom,0px);z-index:6}
+nav button{flex:1;border:0;background:none;padding:12px 4px;font:inherit;font-size:15px;color:var(--muted)}
+nav button.on{color:var(--navy);font-weight:700;border-top:3px solid var(--navy)}
+.card{background:var(--card);border-radius:14px;box-shadow:0 1px 4px rgba(0,0,0,.06);margin-bottom:14px;overflow:hidden}
+.bar{color:#fff;font-weight:700;font-size:17px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
+.bar.green{background:var(--green)}.bar.orange{background:var(--orange)}.bar.purple{background:var(--purple)}
+.bar.blue{background:var(--blue)}.bar.brown{background:var(--brown)}.bar.slate{background:var(--slate)}.bar.navy{background:var(--navy)}
+.body{padding:8px 12px 12px}
+.line{display:grid;grid-template-columns:1fr 118px 36px;gap:6px;align-items:center;margin:6px 0}
+.line.alloc{grid-template-columns:1.2fr .7fr 1fr 1fr}
+.line.alloc.head{font-size:13px;color:var(--muted);margin-bottom:0}
+.line .lbl{font-weight:600;padding:2px 0}
+.out{text-align:right;font-weight:600}
+.pos{color:#1b7f3a;background:#e3f6ea}.neg{color:#b00020;background:#fde7ea}
+.pill{display:inline-block;padding:2px 8px;border-radius:99px;font-size:13px;font-weight:700}
+input,select{font:inherit;font-size:17px;border:1px solid #d6dbe6;border-radius:9px;padding:9px 10px;background:#fffbea;color:#1f3fbf;width:100%;min-width:0}
+input.txt{background:#fffbea}
+input:focus{outline:2px solid var(--blue);border-color:transparent}
+button.btn{font:inherit;font-size:16px;border:0;border-radius:10px;padding:10px 14px;background:var(--navy);color:#fff;font-weight:600}
+button.btn.ghost{background:#eef1f8;color:var(--navy)}
+button.btn.danger{background:#fde7ea;color:#b00020}
+button.btn.wide{width:100%;margin-top:8px}
+button.del{border:0;background:#fde7ea;color:#b00020;border-radius:8px;width:34px;height:34px;font-size:16px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 10px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;border:1px solid #cdd5e6;background:#fff;border-radius:99px;padding:8px 14px;font:inherit;color:var(--navy);font-weight:600}
+.chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.kpi{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kpi div{background:#f7f9fd;border-radius:12px;padding:10px}
+.kpi b{display:block;font-size:19px;margin-top:2px}
+.kpi small{color:var(--muted)}
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;min-width:900px;font-size:15px;background:#fff}
+th{background:#eef3fb;color:var(--navy);text-align:right;padding:8px 6px;position:sticky;top:0}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:inherit}
+td{padding:8px 6px;border-top:1px solid #eef0f5;text-align:right;white-space:nowrap}
+td:first-child{font-weight:700;background:#fff}
+.bars{display:flex;align-items:flex-end;gap:6px;height:130px;padding:8px 2px}
+.bars div{flex:1;background:linear-gradient(to top,var(--blue),var(--green));border-radius:6px 6px 0 0;min-height:2px;position:relative}
+.bars span{position:absolute;bottom:-20px;left:0;right:0;text-align:center;font-size:11px;color:var(--muted)}
+.note{color:var(--muted);font-size:14px;margin:6px 0}
+.center{text-align:center}
+#lock{position:fixed;inset:0;background:rgba(20,30,60,.55);display:none;align-items:center;justify-content:center;z-index:20;padding:16px}
+#lock .card{width:100%;max-width:420px;padding:18px}
+#lock h2{margin:0 0 6px;color:var(--navy)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:90px;background:#1d2433;color:#fff;padding:10px 16px;border-radius:99px;z-index:30;display:none;font-size:15px}
+.sec{font-size:15px;color:var(--muted);margin:14px 4px 6px;font-weight:700}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="title">My Budget 2027</h1>
+  <div class="sub" id="subtitle">Private · encrypted · synced via your Google Drive</div>
+</header>
+<main id="app"></main>
+<nav id="tabs"></nav>
+<div class="toast" id="toast"></div>
+<div id="lock"><div class="card" id="lockcard"></div></div>
+
+<script>
+/* ========= CONFIG: paste your Google OAuth Web client ID here (see README) ========= */
+const GOOGLE_CLIENT_ID = 'PASTE_YOUR_CLIENT_ID.apps.googleusercontent.com';
+/* ================================================================================== */
+
+const LS_KEY = 'budget.v1';
+const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DEFAULT_INCOME = ['Gov','IS','Private','Tawheed','Others','Alpha','Ahrar','Mst'];
+const DEFAULT_MUST = [['Fuel',3500],['Car emergency',3500],['Credit card',0],['Electricity',1500],['Phone bills',2450],['Other essentials',0]];
+const DEFAULT_SUBS = [['IPTV',600],['PS Plus',0],['Insurance',1800],['Abjad',600],['Bein',6100],['Halal Borsa',1000],['Google One',1700],['GoodNotes',350],['YouTube',0]];
+const DEFAULT_CIRCLES = [['Ahmed',7500,10,'2026-04'],['Hadeer',5000,5,'2026-09'],['Shorouk',3000,6,'2026-09'],['Alaa',5000,5,'2026-09'],['Hassan',2000,10,'2026-11'],['Ahmed 2',4000,10,'2026-11']];
+
+let state = null, cryptoKey = null, salt = null, passphrase = null;
+let ui = { tab: 'months', month: '2027-01', settingsOpen: true };
+let googleToken = null, tokenClient = null, pendingToken = null;
+
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt = n => (n === '' || n == null || isNaN(n)) ? '—' : Math.round(Number(n)).toLocaleString('en-US').replace(/,/g,' ');
+const sum = (arr, f) => arr.reduce((a, x) => a + (Number(f(x)) || 0), 0);
+const floorTo = (x, r) => Math.floor(x / r) * r;
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.style.display='block'; clearTimeout(toast._t); toast._t=setTimeout(()=>t.style.display='none',2600); }
+function nextKey(k){ let [y,m]=k.split('-').map(Number); m++; if(m>12){m=1;y++;} return `${y}-${String(m).padStart(2,'0')}`; }
+function addKeys(k,n){ let [y,m]=k.split('-').map(Number); const t=y*12+(m-1)+n; return `${Math.floor(t/12)}-${String(t%12+1).padStart(2,'0')}`; }
+function label(k){ const [y,m]=k.split('-'); return MON[+m-1]+' '+y; }
+function circleEnd(c){ return addKeys(c.start, Math.max(1, Number(c.participants)||1)-1); }
+function circleActive(c,k){ return !!(c.start && c.participants) && c.start <= k && k <= circleEnd(c); }
+function circlePayoutKey(c){ return (c.start && c.turn) ? addKeys(c.start, Number(c.turn)-1) : null; }
+function sortedKeys(){ return Object.keys(state.months).sort(); }
+
+/* ---------- state & seed ---------- */
+function makeMonth(income, must, debts, spentFrom){
+  return { income: income.map(([n,a])=>({name:n,amount:a||0})), must: must.map(([n,a])=>({name:n,amount:a||0})),
+    donated: 0, debts: debts.map(d=>({name:d.name,balance:d.balance??null,paid:0})),
+    spent: {savings:0, subs:0, free:0}, splitSpent: {Baraka:0, Thndr:0, CIB:0, Amtaar:0} };
+}
+function seedState(){
+  const s = { v:1, updated: Date.now(), settings: {
+      saveRate:0.35, donRate:0.075, round:50, subRound:50, warn:0.6,
+      split:[{name:'Baraka',share:0.2},{name:'Thndr',share:0.3},{name:'CIB',share:0.2},{name:'Amtaar',share:0.3}],
+      subs: DEFAULT_SUBS.map(([n,y])=>({name:n,yearly:y})),
+      circles: DEFAULT_CIRCLES.map(([n,m,p,st])=>({name:n,monthly:m,participants:p,start:st,turn:null})) },
+    months: {} };
+  s.months['2027-01'] = makeMonth(DEFAULT_INCOME.map(n=>[n,0]), DEFAULT_MUST, [{name:'CIB debt',balance:50150},{name:'Credit card',balance:0}]);
+  let k='2027-01';
+  for(let i=1;i<12;i++){ k=nextKey(k); s.months[k]=copyMonth(s.months[addKeys(k,-1)]); }
+  return s;
+}
+function copyMonth(prev){
+  return { income: prev.income.map(x=>({name:x.name,amount:0})), must: prev.must.map(x=>({name:x.name,amount:x.amount})),
+    donated:0, debts: prev.debts.map(d=>({name:d.name,balance:d.balance,paid:0})),
+    spent:{savings:0,subs:0,free:0}, splitSpent: Object.fromEntries(Object.keys(prev.splitSpent).map(k=>[k,0])) };
+}
+
+/* ---------- calculations ---------- */
+function computeAll(){
+  const S = state.settings, res = {};
+  let owed = 0;
+  const yearly = sum(S.subs, s=>s.yearly);
+  const reserve = Math.ceil(yearly/12/S.subRound) * S.subRound;
+  for (const k of sortedKeys()) {
+    const m = state.months[k];
+    const income = sum(m.income, x=>x.amount);
+    const circ = sum(S.circles.filter(c=>circleActive(c,k)), c=>c.monthly);
+    const payout = sum(S.circles.filter(c=>c.turn && circlePayoutKey(c)===k), c=>c.monthly*c.participants);
+    const mustBase = sum(m.must, x=>x.amount);
+    const must = mustBase + circ;
+    const has = income > 0;
+    const net = has ? income - must : 0;
+    const sav = has && net > 0 ? floorTo(net*S.saveRate, S.round) : 0;
+    const don = has && net > 0 ? floorTo(net*S.donRate, S.round) : 0;
+    const subs = has ? reserve : 0;
+    const free = has ? net - sav - don - subs : 0;
+    const donated = Number(m.donated) || 0;
+    const owedBefore = owed;
+    if (has) owed = owed + don - donated;
+    res[k] = { income, must, mustBase, circ, payout, net, sav, don, subs, free, donated, owedBefore, owedNow: owed, has,
+      split: S.split.map(b=>({name:b.name, share:b.share, target: sav ? floorTo(sav*b.share, S.round) : 0})),
+      debt: m.debts.some(d=>d.balance!=null && d.balance!=='') ? sum(m.debts, d=>d.balance) : null,
+      debtPaid: sum(m.debts, d=>d.paid) };
+  }
+  return res;
+}
+
+/* ---------- encryption (AES-GCM, key from passphrase via PBKDF2) ---------- */
+const enc = new TextEncoder(), dec = new TextDecoder();
+const b64 = buf => { let s=''; const u=new Uint8Array(buf); for(let i=0;i<u.length;i++) s+=String.fromCharCode(u[i]); return btoa(s); };
+const unb64 = s => Uint8Array.from(atob(s), c=>c.charCodeAt(0));
+async function deriveKey(pass, saltBytes){
+  const base = await crypto.subtle.importKey('raw', enc.encode(pass), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({name:'PBKDF2', salt:saltBytes, iterations:200000, hash:'SHA-256'}, base, {name:'AES-GCM', length:256}, false, ['encrypt','decrypt']);
+}
+async function encryptState(){
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({name:'AES-GCM', iv}, cryptoKey, enc.encode(JSON.stringify(state)));
+  return { v:1, salt: b64(salt), iv: b64(iv), data: b64(ct) };
+}
+async function decryptEnvelope(env, pass){
+  const k = await deriveKey(pass, unb64(env.salt));
+  const pt = await crypto.subtle.decrypt({name:'AES-GCM', iv:unb64(env.iv)}, k, unb64(env.data));
+  return { obj: JSON.parse(dec.decode(pt)), key: k, salt: unb64(env.salt) };
+}
+async function persist(){
+  state.updated = Date.now();
+  const env = await encryptState();
+  localStorage.setItem(LS_KEY, JSON.stringify(env));
+}
+function localEnvelope(){ try { return JSON.parse(localStorage.getItem(LS_KEY)); } catch(e){ return null; } }
+
+/* ---------- lock / unlock / first run ---------- */
+function showLock(html){ $('#lockcard').innerHTML = html; $('#lock').style.display='flex'; }
+function hideLock(){ $('#lock').style.display='none'; }
+function startScreen(){
+  const env = localEnvelope();
+  if (env) {
+    showLock(`<h2>Unlock your budget</h2><p class="note">Enter your passphrase. It is never stored or sent anywhere.</p>
+      <input id="pp" type="password" placeholder="Passphrase" autocomplete="current-password">
+      <button class="btn wide" data-act="unlock">Unlock</button>
+      <p class="note" id="lockerr"></p>`);
+  } else {
+    showLock(`<h2>Welcome</h2><p class="note">Pick a passphrase. Your data is encrypted with it before it leaves this device. If you forget it, nobody can recover your data, including us.</p>
+      <input id="pp" type="password" placeholder="New passphrase (8+ characters)" autocomplete="new-password">
+      <input id="pp2" type="password" placeholder="Repeat passphrase" autocomplete="new-password" style="margin-top:8px">
+      <button class="btn wide" data-act="createNew">Create new budget</button>
+      <button class="btn ghost wide" data-act="restoreDrive">Restore from Google Drive</button>
+      <button class="btn ghost wide" data-act="importFile">Restore from backup file</button>
+      <p class="note" id="lockerr"></p>`);
+  }
+}
+async function unlock(){
+  const pass = $('#pp').value;
+  try {
+    const { obj, key, salt: s } = await decryptEnvelope(localEnvelope(), pass);
+    state = obj; cryptoKey = key; salt = s; passphrase = pass;
+    hideLock(); render(); toast('Unlocked');
+  } catch(e){ $('#lockerr').textContent = 'Wrong passphrase, please try again.'; }
+}
+async function createNew(){
+  const p = $('#pp').value, p2 = $('#pp2').value;
+  if (p.length < 8) return $('#lockerr').textContent = 'Use at least 8 characters.';
+  if (p !== p2) return $('#lockerr').textContent = 'The two passphrases do not match.';
+  passphrase = p; salt = crypto.getRandomValues(new Uint8Array(16));
+  cryptoKey = await deriveKey(p, salt); state = seedState();
+  await persist(); hideLock(); render(); toast('Budget created');
+}
+async function restoreFromEnvelope(env){
+  const pass = $('#pp') ? $('#pp').value : passphrase;
+  if (!pass) return $('#lockerr').textContent = 'Enter your passphrase first.';
+  try {
+    const { obj, key, salt: s } = await decryptEnvelope(env, pass);
+    state = obj; cryptoKey = key; salt = s; passphrase = pass;
+    localStorage.setItem(LS_KEY, JSON.stringify(env));
+    hideLock(); render(); toast('Restored');
+  } catch(e){ $('#lockerr').textContent = 'Could not open that data. Check the passphrase.'; }
+}
+
+/* ---------- Google Drive (private appDataFolder) ---------- */
+function driveReady(){
+  if (!window.google || !google.accounts) throw new Error('Google sign-in did not load. Check your connection.');
+  if (GOOGLE_CLIENT_ID.startsWith('PASTE')) throw new Error('Add your Google client ID in index.html first (see README).');
+}
+function getToken(){
+  return new Promise((resolve, reject) => {
+    try { driveReady(); } catch(e){ return reject(e); }
+    if (!tokenClient) {
+      tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: GOOGLE_CLIENT_ID,
+        scope: 'https://www.googleapis.com/auth/drive.appdata',
+        callback: resp => { const p = pendingToken; pendingToken = null; if (!p) return;
+          if (resp.error) p.reject(new Error(resp.error)); else { googleToken = resp.access_token; p.resolve(googleToken); } },
+        error_callback: e => { const p = pendingToken; pendingToken = null; if (p) p.reject(new Error(e.type || 'Sign-in cancelled')); }
+      });
+    }
+    pendingToken = { resolve, reject };
+    tokenClient.requestAccessToken({ prompt: googleToken ? '' : 'consent' });
+  });
+}
+const authH = () => ({ Authorization: 'Bearer ' + googleToken });
+async function driveCheck(r){ if (!r.ok) throw new Error('Google Drive error ' + r.status); return r; }
+async function driveFind(){
+  const url = 'https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&fields=files(id,name)&q=' + encodeURIComponent("name='budget.enc'");
+  const j = await (await driveCheck(await fetch(url, {headers: authH()}))).json();
+  return j.files && j.files[0] ? j.files[0] : null;
+}
+async function driveDownload(id){
+  return (await driveCheck(await fetch(`https://www.googleapis.com/drive/v3/files/${id}?alt=media`, {headers: authH()}))).json();
+}
+async function driveSave(env, id){
+  const body = JSON.stringify(env);
+  if (id) {
+    await driveCheck(await fetch(`https://www.googleapis.com/upload/drive/v3/files/${id}?uploadType=media`,
+      {method:'PATCH', headers:{...authH(), 'Content-Type':'application/json'}, body}));
+    return id;
+  }
+  const boundary = 'b' + Date.now();
+  const meta = JSON.stringify({name:'budget.enc', parents:['appDataFolder']});
+  const multi = `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n${meta}\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n${body}\r\n--${boundary}--`;
+  const j = await (await driveCheck(await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',
+      {method:'POST', headers:{...authH(), 'Content-Type':`multipart/related; boundary=${boundary}`}, body: multi}))).json();
+  return j.id;
+}
+async function syncNow(){
+  if (!cryptoKey) return;
+  try {
+    await getToken();
+    const f = await driveFind();
+    if (f) {
+      const remote = await driveDownload(f.id);
+      const { obj } = await decryptEnvelope(remote, passphrase);
+      if (obj.updated > state.updated) {
+        state = obj; await persist(); render(); toast('Newer data downloaded'); return;
+      }
+    }
+    const env = await encryptState();
+    await driveSave(env, f ? f.id : null);
+    ui.lastSync = new Date().toLocaleTimeString();
+    toast('Synced'); render();
+  } catch(e){ toast(e.message || 'Sync failed'); }
+}
+async function restoreDrive(){
+  try {
+    const pass = $('#pp').value; if (!pass) return $('#lockerr').textContent = 'Enter your passphrase first.';
+    await getToken();
+    const f = await driveFind();
+    if (!f) return $('#lockerr').textContent = 'No budget found in Google Drive yet.';
+    const remote = await driveDownload(f.id);
+    localStorage.setItem(LS_KEY, JSON.stringify(remote));
+    await restoreFromEnvelope(remote);
+  } catch(e){ $('#lockerr').textContent = e.message; }
+}
+
+/* ---------- backup file ---------- */
+function exportBackup(){
+  const env = localEnvelope();
+  if (!env) return toast('Nothing to export yet');
+  const blob = new Blob([JSON.stringify(env)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'budget-backup-' + new Date().toISOString().slice(0,10) + '.json'; a.click();
+  toast('Encrypted backup saved');
+}
+function importFile(){
+  const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'application/json';
+  inp.onchange = async () => {
+    const env = JSON.parse(await inp.files[0].text());
+    if (!$('#pp') || !$('#pp').value) { passphrase = prompt('Passphrase for this backup?'); }
+    await restoreFromEnvelope(env);
+  };
+  inp.click();
+}
+
+/* ---------- actions & inputs ---------- */
+function setPath(obj, path, value){
+  const parts = path.split('.'); let cur = obj;
+  for (let i=0;i<parts.length-1;i++) cur = cur[parts[i]];
+  cur[parts[parts.length-1]] = value;
+}
+document.addEventListener('change', async e => {
+  const el = e.target;
+  if (!el.dataset || !el.dataset.path || !state) return;
+  let v = el.value;
+  if (el.dataset.num) v = (v === '' ? (el.dataset.nullable ? null : 0) : Number(v));
+  setPath(state, el.dataset.path, v);
+  await persist(); render();
+});
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-act],[data-tab],[data-month]');
+  if (!b) return;
+  if (b.dataset.tab) { ui.tab = b.dataset.tab; return render(); }
+  if (b.dataset.month) { ui.month = b.dataset.month; return render(); }
+  const a = b.dataset.act, k = b.dataset.k, i = Number(b.dataset.i);
+  if (a === 'unlock') return unlock();
+  if (a === 'createNew') return createNew();
+  if (a === 'restoreDrive') return restoreDrive();
+  if (a === 'importFile') return importFile();
+  if (a === 'syncNow') return syncNow();
+  if (a === 'exportBackup') return exportBackup();
+  if (a === 'addMonth') {
+    const last = sortedKeys().slice(-1)[0];
+    const nk = nextKey(last); state.months[nk] = copyMonth(state.months[last]);
+    ui.month = nk; await persist(); return render();
+  }
+  if (a === 'delMonth') {
+    if (!confirm('Delete ' + label(k) + '?')) return;
+    delete state.months[k]; ui.month = sortedKeys().slice(-1)[0] || null;
+    await persist(); return render();
+  }
+  const list = {
+    addInc:['income',{name:'',amount:0}], addMust:['must',{name:'',amount:0}],
+    addDebt:['debts',{name:'',balance:null,paid:0}]
+  };
+  if (list[a]) { state.months[k][list[a][0]].push({...list[a][1]}); await persist(); return render(); }
+  const del = {delInc:'income', delMust:'must', delDebt:'debts'};
+  if (del[a]) { state.months[k][del[a]].splice(i,1); await persist(); return render(); }
+  if (a === 'addSub') { state.settings.subs.push({name:'',yearly:0}); await persist(); return render(); }
+  if (a === 'delSub') { state.settings.subs.splice(i,1); await persist(); return render(); }
+  if (a === 'addCircle') { state.settings.circles.push({name:'',monthly:0,participants:10,start:ui.month,turn:null}); await persist(); return render(); }
+  if (a === 'delCircle') { state.settings.circles.splice(i,1); await persist(); return render(); }
+  if (a === 'toggleSettings') { ui.settingsOpen = !ui.settingsOpen; return render(); }
+});
+
+/* ---------- rendering ---------- */
+function card(title, color, body){ return `<div class="card"><div class="bar ${color}"><span>${title}</span></div><div class="body">${body}</div></div>`; }
+function left(target, spent){ if (target === '' || target == null) return '<span class="out">—</span>'; const l = Number(target)-(Number(spent)||0); return `<span class="out pill ${l>=0?'pos':'neg'}">${fmt(l)}</span>`; }
+
+function renderMonths(R){
+  const keys = sortedKeys(); if (!keys.includes(ui.month)) ui.month = keys[0];
+  const k = ui.month, m = state.months[k], r = R[k];
+  const chips = keys.map(x=>`<button class="chip ${x===k?'on':''}" data-month="${x}">${label(x)}</button>`).join('');
+  const inc = m.income.map((x,i)=>`<div class="line"><input class="txt" data-path="months.${k}.income.${i}.name" value="${esc(x.name)}"><input type="number" inputmode="decimal" data-num="1" data-path="months.${k}.income.${i}.amount" value="${x.amount}"><button class="del" data-act="delInc" data-k="${k}" data-i="${i}">✕</button></div>`).join('');
+  const must = m.must.map((x,i)=>`<div class="line"><input class="txt" data-path="months.${k}.must.${i}.name" value="${esc(x.name)}"><input type="number" inputmode="decimal" data-num="1" data-path="months.${k}.must.${i}.amount" value="${x.amount}"><button class="del" data-act="delMust" data-k="${k}" data-i="${i}">✕</button></div>`).join('');
+  const circles = `<div class="line"><span class="lbl">Circles (automatic)</span><span class="out">${fmt(r.circ)}</span><span></span></div>`;
+  const alloc = `
+    <div class="line alloc head"><span>Bucket</span><span>Share</span><span>Target</span><span>Spent / Left</span></div>
+    <div class="line alloc"><span class="lbl">Savings</span><span>${r.net>0?Math.round(r.sav/r.net*100)+'%':'—'}</span><span>${fmt(r.has?r.sav:'')}</span>
+      <span>${r.has?`<input type="number" inputmode="decimal" data-num="1" data-path="months.${k}.spent.savings" value="${m.spent.savings}">`:''}</span></div>
+    <div class="line alloc"><span class="lbl">Donation</span><span>${r.net>0?Math.round(r.don/r.net*1000)/10+'%':'—'}</span><span>${fmt(r.has?r.don:'')}</span>
+      <span>${r.has?`<input type="number" inputmode="decimal" data-num="1" data-path="months.${k}.donated" value="${m.donated}">`:''}</span></div>
+    <div class="line alloc"><span class="lbl">Subscriptions</span><span>${r.net>0?Math.round(r.subs/r.net*1000)/10+'%':'—'}</span><span>${fmt(r.has?r.subs:'')}</span>
+      <span>${r.has?`<input type="number" inputmode="decimal" data-num="1" data-path="months.${k}.spent.subs" value="${m.spent.subs}">`:''}</span></div>
+    <div class="line alloc"><span class="lbl">Free spending</span><span>${r.net>0?Math.round(r.free/r.net*1000)/10+'%':'—'}</span><span>${fmt(r.has?r.free:'')}</span>
+      <span>${r.has?`<input type="number" inputmode="decimal" data-num="1" data-path="months.${k}.spent.free" value="${m.spent.free}">`:''}</span></div>`;
+  const split = r.split.map((b,i)=>`<div class="line alloc"><span class="lbl">${esc(b.name)}</span><span>${Math.round(b.share*100)}%</span><span>${fmt(r.has?b.target:'')}</span>
+      <span><input type="number" inputmode="decimal" data-num="1" data-path="months.${k}.splitSpent.${esc(b.name)}" value="${m.splitSpent[b.name]||0}"></span></div>`).join('');
+  const debts = m.debts.map((d,i)=>`<div class="line" style="grid-template-columns:1fr 100px 100px 36px"><input class="txt" data-path="months.${k}.debts.${i}.name" value="${esc(d.name)}">
+      <input type="number" inputmode="decimal" data-num="1" data-nullable="1" data-path="months.${k}.debts.${i}.balance" value="${d.balance ?? ''}" placeholder="Balance">
+      <input type="number" inputmode="decimal" data-num="1" data-path="months.${k}.debts.${i}.paid" value="${d.paid ?? 0}" placeholder="Paid">
+      <button class="del" data-act="delDebt" data-k="${k}" data-i="${i}">✕</button></div>`).join('');
+  const status = !r.has ? '<p class="note">Add income to see the split.</p>' : '';
+  $('#app').innerHTML = `
+    <div class="chips">${chips}<button class="chip" data-act="addMonth">+ Next month</button></div>
+    ${card('Income','green', inc + `<button class="btn ghost wide" data-act="addInc" data-k="${k}">+ Add source</button>
+      <div class="line"><span class="lbl">Total income</span><span class="out">${fmt(r.income)}</span><span></span></div>`)}
+    ${card('Must pay','orange', must + circles + `<button class="btn ghost wide" data-act="addMust" data-k="${k}">+ Add item</button>
+      <div class="line"><span class="lbl">Total must-pay</span><span class="out">${fmt(r.must)}</span><span></span></div>`)}
+    ${card('Result','navy', `<div class="kpi"><div><small>Net income</small><b>${fmt(r.has?r.net:'')}</b></div>
+      <div><small>Must-pay share</small><b>${r.income>0?Math.round(r.must/r.income*100)+'%':'—'}</b></div>
+      <div><small>Circle payout this month</small><b>${fmt(r.payout)}</b><small>expected, not in net</small></div>
+      <div><small>Donation owed so far</small><b class="${r.owedNow>0?'neg pill':''}">${r.has||r.owedNow?fmt(r.owedNow):'—'}</b></div></div>${status}`)}
+    ${card('Allocation of net','blue', alloc)}
+    ${card('Savings split','brown', `<div class="line alloc head"><span>Bucket</span><span>Share</span><span>Target</span><span>Spent</span></div>${split}`)}
+    ${card('Debts this month','slate', `<div class="line" style="grid-template-columns:1fr 100px 100px 36px;font-size:13px;color:var(--muted)"><span>Debt</span><span>Balance</span><span>Paid</span><span></span></div>${debts}
+      <button class="btn ghost wide" data-act="addDebt" data-k="${k}">+ Add debt</button>
+      <p class="note">Total balance: ${fmt(r.debt)} · Paid this month: ${fmt(r.debtPaid)}</p>`)}
+    <p class="note center"><button class="btn danger" data-act="delMonth" data-k="${k}">Delete this month</button></p>`;
+}
+
+function renderSummary(R){
+  const keys = sortedKeys(); const rows = keys.map(k=>({k, ...R[k]}));
+  const withData = rows.filter(r=>r.has);
+  const avg = f => withData.length ? Math.round(withData.reduce((a,r)=>a+f(r),0)/withData.length) : '—';
+  const best = withData.length ? withData.reduce((a,b)=>b.net>a.net?b:a) : null;
+  const worst = withData.length ? withData.reduce((a,b)=>b.net<a.net?b:a) : null;
+  const maxNet = Math.max(1, ...withData.map(r=>r.net));
+  const bars = rows.map(r=>`<div style="height:${r.has?Math.max(3,r.net/maxNet*100):2}%" title="${label(r.k)}: ${fmt(r.net)}"><span>${MON[+r.k.slice(5)-1]}</span></div>`).join('');
+  const tbl = rows.map(r=>`<tr><td>${label(r.k)}</td><td>${fmt(r.has?r.income:'')}</td><td>${fmt(r.has?r.must:'')}</td><td>${fmt(r.has?r.net:'')}</td>
+    <td>${fmt(r.has?r.sav:'')}</td><td>${fmt(r.has?r.don:'')}</td><td>${fmt(r.donated||'')}</td>
+    <td class="${r.owedNow>0?'neg':''}">${r.has||r.owedNow?fmt(r.owedNow):''}</td><td>${fmt(r.has?r.free:'')}</td><td>${fmt(r.debt)}</td></tr>`).join('');
+  $('#app').innerHTML = `
+    ${card('Net income by month','navy', `<div class="bars">${bars}</div><p style="height:14px"></p>`)}
+    ${card('Analysis','purple', `<div class="kpi">
+      <div><small>Months with data</small><b>${withData.length}</b></div>
+      <div><small>Average net</small><b>${fmt(avg(r=>r.net))}</b></div>
+      <div><small>Average free spending</small><b>${fmt(avg(r=>r.free))}</b></div>
+      <div><small>Average savings rate</small><b>${withData.length?Math.round(withData.reduce((a,r)=>a+(r.net>0?r.sav/r.net:0),0)/withData.length*100)+'%':'—'}</b></div>
+      <div><small>Best month</small><b>${best?label(best.k)+' · '+fmt(best.net):'—'}</b></div>
+      <div><small>Lowest month</small><b>${worst?label(worst.k)+' · '+fmt(worst.net):'—'}</b></div>
+      <div><small>Donation owed now</small><b>${fmt(rows.length?rows[rows.length-1].owedNow:0)}</b></div>
+      <div><small>Circle payouts (all months)</small><b>${fmt(sum(rows,r=>r.payout))}</b></div></div>`)}
+    ${card('All months','orange', `<div class="table-wrap"><table><thead><tr><th>Month</th><th>Income</th><th>Must-pay</th><th>Net</th><th>Savings</th><th>Donation</th><th>Donated</th><th>Owed</th><th>Free</th><th>Debt</th></tr></thead><tbody>${tbl}</tbody></table></div>`)}`;
+}
+
+function renderSettings(R){
+  const S = state.settings;
+  const splitTotal = sum(S.split, b=>b.share);
+  const check = Math.abs(splitTotal-1) < 0.0001 ? '<span class="pill pos">OK, 100%</span>' : `<span class="pill neg">Shares add to ${Math.round(splitTotal*100)}%</span>`;
+  const rates = `<div class="line"><span class="lbl">Saving rate</span><input type="number" step="0.01" data-num="1" data-path="settings.saveRate" value="${S.saveRate}"><span></span></div>
+    <div class="line"><span class="lbl">Donation rate</span><input type="number" step="0.001" data-num="1" data-path="settings.donRate" value="${S.donRate}"><span></span></div>
+    <div class="line"><span class="lbl">Round savings & donation down to</span><input type="number" data-num="1" data-path="settings.round" value="${S.round}"><span></span></div>
+    <div class="line"><span class="lbl">Round subscriptions up to</span><input type="number" data-num="1" data-path="settings.subRound" value="${S.subRound}"><span></span></div>
+    <div class="line"><span class="lbl">Warn when must-pay above</span><input type="number" step="0.01" data-num="1" data-path="settings.warn" value="${S.warn}"><span></span></div>`;
+  const split = S.split.map((b,i)=>`<div class="line"><input class="txt" data-path="settings.split.${i}.name" value="${esc(b.name)}"><input type="number" step="0.01" data-num="1" data-path="settings.split.${i}.share" value="${b.share}"><span></span></div>`).join('');
+  const subs = S.subs.map((s,i)=>`<div class="line"><input class="txt" data-path="settings.subs.${i}.name" value="${esc(s.name)}"><input type="number" data-num="1" data-path="settings.subs.${i}.yearly" value="${s.yearly}"><button class="del" data-act="delSub" data-i="${i}">✕</button></div>`).join('');
+  const circles = S.circles.map((c,i)=>{
+    const payout = circlePayoutKey(c); const end = c.start && c.participants ? circleEnd(c) : null;
+    return `<div class="card" style="box-shadow:none;border:1px solid #eef0f5;margin:8px 0">
+      <div class="body">
+        <div class="line" style="grid-template-columns:1fr 1fr 36px"><input class="txt" data-path="settings.circles.${i}.name" value="${esc(c.name)}"><input type="number" data-num="1" data-path="settings.circles.${i}.monthly" value="${c.monthly}"><button class="del" data-act="delCircle" data-i="${i}">✕</button></div>
+        <div class="line" style="grid-template-columns:1fr 1fr 1fr"><label class="note">Participants<input type="number" data-num="1" data-path="settings.circles.${i}.participants" value="${c.participants}"></label>
+          <label class="note">Start month<input type="month" data-path="settings.circles.${i}.start" value="${c.start||''}"></label>
+          <label class="note">My turn<input type="number" data-num="1" data-nullable="1" data-path="settings.circles.${i}.turn" value="${c.turn ?? ''}"></label></div>
+        <p class="note">${c.turn && payout ? `Payout: <b>${label(payout)}</b> · receive <b>${fmt(c.monthly*c.participants)}</b> · paid in before: ${fmt(c.monthly*(c.turn-1))} · turn ${c.turn} of ${c.participants}` : `Enter your turn to see the payout. Runs until ${end?label(end):'—'}.`}</p>
+      </div></div>`;
+  }).join('');
+  $('#app').innerHTML = `
+    ${card('Rates','navy', rates)}
+    ${card('Savings split (share of your savings)','brown', `${split}<p>${check}</p>`)}
+    ${card('Subscriptions (yearly cost)','purple', `${subs}<button class="btn ghost wide" data-act="addSub">+ Add subscription</button>
+      <div class="line"><span class="lbl">Total yearly</span><span class="out">${fmt(sum(S.subs,s=>s.yearly))}</span><span></span></div>
+      <div class="line"><span class="lbl">Set aside each month</span><span class="out">${fmt(Math.ceil(sum(S.subs,s=>s.yearly)/12/S.subRound)*S.subRound)}</span><span></span></div>`)}
+    ${card('Circles','orange', `${circles}<button class="btn ghost wide" data-act="addCircle">+ Add circle</button>
+      <p class="note">Start month is the month you first pay in. Participants = number of people in the circle. My turn = your place in the payout order (1 = first).</p>`)}`;
+}
+
+function renderSync(){
+  const connected = !!googleToken;
+  $('#app').innerHTML = `
+    ${card('Sync across devices','blue', `
+      <p class="note">Your data is encrypted on this device. Google Drive stores only the scrambled copy, in a folder that only this app can see.</p>
+      <button class="btn wide" data-act="syncNow">Sync now</button>
+      <p class="note">${ui.lastSync ? 'Last sync: '+ui.lastSync : 'Not synced yet in this session.'} ${GOOGLE_CLIENT_ID.startsWith('PASTE')?'<br><b>Add your Google client ID first (see README).</b>':''}</p>`)}
+    ${card('Backup file','green', `
+      <p class="note">Save an encrypted copy of your data to this device, for example to your Files app or iCloud Drive.</p>
+      <button class="btn ghost wide" data-act="exportBackup">Export encrypted backup</button>
+      <button class="btn ghost wide" data-act="importFile">Import backup file</button>`)}
+    ${card('Privacy','slate', `
+      <p class="note">• Your passphrase is never stored or sent anywhere. Forget it and your data cannot be recovered.<br>
+      • No analytics, no ads, no third-party scripts except Google's sign-in.<br>
+      • Sync is last-change-wins: finish editing on one device, then sync before switching to another.</p>`)}`;
+}
+
+function renderTabs(){
+  const t = [['months','Months'],['summary','Summary'],['settings','Settings'],['sync','Sync']];
+  $('#tabs').innerHTML = t.map(([id,l])=>`<button class="${ui.tab===id?'on':''}" data-tab="${id}">${l}</button>`).join('');
+}
+
+function render(){
+  if (!state) return;
+  const R = computeAll();
+  renderTabs();
+  if (ui.tab === 'months') renderMonths(R);
+  else if (ui.tab === 'summary') renderSummary(R);
+  else if (ui.tab === 'settings') renderSettings(R);
+  else renderSync();
+}
+
+/* ---------- boot ---------- */
+if ('serviceWorker' in navigator) {}
+startScreen();
+</script>
+</body>
+</html>
